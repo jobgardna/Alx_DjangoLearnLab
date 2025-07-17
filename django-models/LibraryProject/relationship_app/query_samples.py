@@ -26,22 +26,25 @@ def list_books_in_library(library_name):
 # 2. Query all books by a specific author
 def books_by_author(author_name):
     books = Book.objects.filter(author__name=author_name)
-    print(f"Books by {author_name}:")
-    for book in books:
-        print(f"- {book.title}")
+    if books.exists():
+        print(f"Books by {author_name}:")
+        for book in books:
+            print(f"- {book.title}")
+    else:
+        print(f"No books found by {author_name}.")
 
 
 # 3. Retrieve the librarian for a library
 def librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        librarian = library.librarian  # reverse relation from OneToOneField
-        print(f"Librarian for {library.name}: {librarian.name}")
+        if hasattr(library, 'librarian'):
+            print(f"Librarian for {library.name}: {library.librarian.name}")
+        else:
+            print("No librarian assigned to this library.")
     except Library.DoesNotExist:
         print("Library not found.")
-    except Librarian.DoesNotExist:
-        print("No librarian assigned to this library.")
-
+        
 
 # --- Sample Calls ---
 
