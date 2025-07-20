@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Book
 from .models import Library
 
@@ -34,3 +34,18 @@ def register(request):
 # Homepage
 def homepage(request):
     return render(request, 'relationship_app/home.html')
+
+def role_check(role):
+    return lambda user: user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == role
+
+@user_passes_test(role_check('Admin'))
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@user_passes_test(role_check('Librarian'))
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@user_passes_test(role_check('Member'))
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
